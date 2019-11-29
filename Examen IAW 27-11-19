@@ -1,0 +1,60 @@
+#Obtencion de datos hardware
+$Sistema=Get-WmiObject Win32_ComputerSystem > Datos.txt
+$DataBase=Get-WmiObject Win32_BaseBoard >> Datos.txt
+$BIOS=Get-WmiObject Win32_BIOS >> Datos.txt
+$Procesador=Get-WmiObject Win32_Processor >> Datos.txt
+$Bateria=Get-WmiObject Win32_Battery >> Datos.txt
+
+$Hard = Get-Content Datos.txt
+
+#Obtencion de datos RAM
+$Datos2 = Get-WmiObject win32_physicalmemory | Format-Table Manufacturer,Banklabel,Configuredclockspeed,Devicelocator,Capacity,Serialnumber -autosize
+
+$Datos2 > Ram.txt
+
+$Ram = Get-Content Ram.txt
+
+#Obtencion de hilos
+Get-Process | select name,threads | %{
+    $_.Name +  "->" + ($_.Threads).id.count | Out-file Prohilos.txt -Append
+}
+
+$hilos = Get-Content Prohilos.txt
+
+#Obtencion de hardware 2
+
+cd C:\Users\Night\Documents\Datos
+
+$Hard2 = Get-Content Datos2.txt
+
+#Obtencion de hilos 2
+
+cd C:\Users\Night\Documents\Datos
+
+$hilos2 = Get-Content Prohilos2.txt
+
+#Creacion de WordPress
+$var = "victorpcdatos"
+$pass = "Andel2019"
+cd C:\xampp\htdocs\wp
+
+foreach($usuario in $var)
+{
+$usuario
+New-Item -ItemType Directory -Name $usuario -Force
+cd C:\xampp\htdocs\wp\$usuario
+php.exe C:\xampp\php\wp-cli.phar core download
+php.exe C:\xampp\php\wp-cli.phar config create --dbname=$usuario --dbuser=root
+php.exe C:\xampp\php\wp-cli.phar db create
+php.exe C:\xampp\php\wp-cli.phar core install --url=localhost/wp/$usuario --title="Pagina web" --admin_user=$usuario --admin_password=$pass --admin_email=mi@email.com
+php.exe C:\xampp\php\wp-cli.phar plugin install sg-cachepress --activate
+php.exe C:\xampp\php\wp-cli.phar plugin install wp-smushit --activate
+php.exe C:\xampp\php\wp-cli.phar plugin install wordpress-seo --activate
+}
+
+#Creación del/los post/s
+php.exe C:\xampp\php\wp-cli.phar post create --post_title="Ordenador Principal" --post_content="<h2>Hardware</h2><div><strong>$Hard</strong></div><br><h2>Ram</h2><div><strong>$Ram<strong></div><br><h2>Procesos e hilos</h2><div><strong>$hilos<strong></div>" --post_type="page" --menu_order=7
+
+php.exe C:\xampp\php\wp-cli.phar post create --post_title="Ordenador Secundario" --post_content="<h2>Hardware</h2><div><strong>$Hard2</strong></div><br><h2>Procesos e hilos</h2><div><strong>$hilos2<strong></div>" --post_type="page" --menu_order=7
+
+cd C:\Users\Night
