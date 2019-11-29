@@ -21,13 +21,13 @@ Get-Process | select name,threads | %{
 
 $hilos = Get-Content Prohilos.txt
 
-#Obtencion de hardware 2
+#Obtencion de hardware 2 (Debe estar en una carpeta compartida)
 
 cd C:\Users\Night\Documents\Datos
 
 $Hard2 = Get-Content Datos2.txt
 
-#Obtencion de hilos 2
+#Obtencion de hilos 2 (Debe estar en una carpeta compartida)
 
 cd C:\Users\Night\Documents\Datos
 
